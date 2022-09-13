@@ -10,6 +10,12 @@ def get_file_path(request, filename):
     return os.path.join('uploads/', filename)
 
 
+class VisibleCategoriesManager(models.Manager):
+    def get_queryset(self):
+        return super(VisibleCategoriesManager, self).get_queryset()\
+            .filter(is_hidden=False)
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=150)
@@ -22,8 +28,17 @@ class Category(models.Model):
     meta_description = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = models.Manager()              # Default Manager
+    visibles = VisibleCategoriesManager()  # Custom Manager
+
     def __str__(self) -> str:
         return self.name
+
+
+class VisibleProductsManager(models.Manager):
+    def get_queryset(self):
+        return super(VisibleProductsManager, self).get_queryset()\
+            .filter(is_hidden=False)
 
 
 class Product(models.Model):
@@ -43,6 +58,9 @@ class Product(models.Model):
     meta_keywords = models.CharField(max_length=150)
     meta_description = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()              # Default Manager
+    visibles = VisibleProductsManager()     # Custom Manager
 
     def __str__(self) -> str:
         return self.name
